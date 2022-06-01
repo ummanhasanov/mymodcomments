@@ -1,6 +1,9 @@
 {* @author Umman Hasanov
 *<umman3018@gmail.com>
 *}
+{if isset($confirmation)}
+    <div class="alert alert-success">Settings updated</div>
+{/if}
 <fieldset>
     <h2>My Module Configuration</h2>
     <div class="panel">
@@ -37,8 +40,3 @@
         </form>
     </div>
 </fieldset>
-
-
-{if isset($confirmation)}
-    <div class="alert alert-success">Settings updated</div>
-{/if}
