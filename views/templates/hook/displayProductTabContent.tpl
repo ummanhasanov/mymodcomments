@@ -2,7 +2,7 @@
 *<umman3018@gmail.com>
 *}
 
-<h3 class="page-product-heading">Product Comments</h3>
+<h3 class="page-product-heading" id="mymodcomments-content-tab"{if isset($new_comment_posted)} data-scroll="true"{/if}>{l s='Product Comments' mod='mymodcomments'}</h3>
 <div class="rte">
     {foreach from=$comments item=comment}
         <p>
@@ -18,18 +18,8 @@
         {if $enable_grades eq 1}
             <div class="form-group">
                 <label for="grade">Grade:</label>
-                <div class="row">
-                    <div class="col-xs-4">
-                        <select id="grade" class="form-control" name="grade">
-                            <option value="0">-- Choose --</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-                </div>
+                <input id="grade" name="grade" value="0" type="number" class="rating"
+                       min="0" max="5" step="1" data-size="sm" >
             </div>
         {/if}
         {if $enable_comments eq 1}

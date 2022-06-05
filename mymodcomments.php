@@ -7,20 +7,17 @@ class MyModComments extends Module {
         $this->tab = 'front_office_features';
         $this->version = '1.0.0';
         $this->author = 'Umman Hasanov';
+        $this->bootstrap = true;
+        parent::__construct();
         $this->displayName = $this->l('My Module Of Product Comments');
         $this->description = $this->l('With this module your customers will be able to grade and comments your products');
-
-        parent::__construct();
-
-        $this->bootstrap = true;
-
-//        if (!Configuration::get('MYMODCOMMENTS_NAME')) {
-//            $this->warning = $this->l('No name provided');
-//        }
     }
 
     public function install() {
         parent::install();
+        $sql_file = dirname(__FILE__) . '/install/install.sql';
+        $this->loadSQLFile($sql_file);
+
         $this->registerHook('displayProductTabContent');
         return true;
     }
@@ -41,7 +38,6 @@ class MyModComments extends Module {
         $this->context->smarty->assign('enable_grades', $enable_grades);
         $this->context->smarty->assign('enable_comments', $enable_comments);
     }
-    
 
     public function getContent() {
         $this->processConfiguration();
@@ -61,6 +57,7 @@ class MyModComments extends Module {
                 'date_add' => date('Y-m-d  H:i:s'),
             );
             Db::getInstance()->insert('mymod_comment', $insert);
+            $this->context->smarty->assign('new_comment_posted', 'true');
         }
     }
 
@@ -70,9 +67,31 @@ class MyModComments extends Module {
 
         $id_product = Tools::getValue('id_product');
         $comments = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'mymod_comment WHERE id_product= ' . (int) $id_product);
+        $this->context->controller->addCSS($this->_path . 'views/css/mymodcomments.css', 'all');
+        $this->context->controller->addJS($this->_path . 'views/js/mymodcomments.js');
+        $this->context->controller->addJQueryUI('ui.slider');
+        $this->context->controller->addCSS($this->_path . 'views/css/star-rating.css', 'all');
+        $this->context->controller->addJS($this->_path . 'views/js/star-rating.js');
+
         $this->context->smarty->assign('enable_grades', $enable_grades);
         $this->context->smarty->assign('enable_comments', $enable_comments);
         $this->context->smarty->assign('comments', $comments);
+    }
+
+    public function loadSQLFile($sql_file) {
+        // Get install SQL file content
+        $sql_content = file_get_contents($sql_file);
+
+        // Replace prefix and store SQL command in array
+        $sql_content = str_replace('PREFIX_', _DB_PREFIX_, $sql_content);
+        $sql_requests = preg_split("/;\s*[\r\n]+/", $sql_content);
+
+        // Execute each SQL statement
+        $result = true;
+        foreach ($sql_requests as $request)
+            if (!empty($request))
+                $result &= Db::getInstance()->execute(trim($request));
+        return $result;
     }
 
     public function hookDisplayProductTabContent($params) {
