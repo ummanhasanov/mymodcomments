@@ -13,7 +13,7 @@ class MyModComments extends Module {
         $this->description = $this->l('With this module your customers will be able to grade and comments your products');
         $this->ps_versions_compliancy = array('min' => '1.5.2', 'max' =>
             '1.7.9.9');
-        $this->dependencies = array('paypal', 'blockcart');
+//        $this->dependencies = array('paypal', 'blockcart');
     }
 
     public function install() {
@@ -93,7 +93,7 @@ class MyModComments extends Module {
                 'firstname' => pSQL($firstname),
                 'lastname' => pSQL($lastname),
                 'email' => pSQL($email),
-                'grade' => (int)$grade,
+                'grade' => (int) $grade,
                 'comment' => pSQL($comment),
                 'date_add' => date('Y-m-d  H:i:s'),
             );
@@ -141,6 +141,31 @@ class MyModComments extends Module {
         $this->processProductTabContent();
         $this->assignProductTabContent();
         return $this->display(__FILE__, 'displayProductTabContent.tpl');
+    }
+
+    public function onClickOption($type, $href = false) {
+        $confirm_reset = $this->l('Reseting this module will delete all comments from your database, are you sure you want to reset it?');
+        
+        $reset_callback = "return mymodcomments_reset('".addslashes($confirm_reset)."');";
+        $matchType = array(
+            'reset' => $reset_callback,
+            'delete' => "return confirm('Confirm delete?')",
+        );
+        if (isset($matchType[$type]))
+            return $matchType[$type];
+        return '';
+    }
+
+    public function hookDisplayBackOfficeHeader($params) {
+// If we are not on section modules, we do not add JS file
+        if (Tools::getValue('controller') != 'AdminModules')
+            return '';
+// Assign module mymodcomments base dir
+        $this->context->smarty->assign('pc_base_dir',
+                __PS_BASE_URI__ . 'modules/' . $this->name . '/');
+// Display template
+        return $this->display(__FILE__,
+                        'displayBackOfficeHeader.tpl');
     }
 
 }
