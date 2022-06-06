@@ -4,32 +4,68 @@
 
 <h3 class="page-product-heading" id="mymodcomments-content-tab"{if isset($new_comment_posted)} data-scroll="true"{/if}>{l s='Product Comments' mod='mymodcomments'}</h3>
 <div class="rte">
+
     {foreach from=$comments item=comment}
-        <p>
+        <div class="mymodcomments-comment"> 
+            <img
+                src="http://www.gravatar.com/avatar/{$comment.email|trim|strtolower|md5}?
+                s=45" class="pull-left img-thumbnail mymodcomments-avatar" />
+            <div> {$comment.firstname} {$comment.lastname|substr:0:1}</div>
+            <strong>{l s='Grade' mod='mymodcomments'} :</strong>{$comment.grade}/5<br>
             <strong>
-                Comment #{$comment.id_mymod_comment}:</strong>
+                {l s='Comment' mod='mymodcomments'}  #{$comment.id_mymod_comment}:</strong>
             {$comment.comment}<br>
-            <strong>Grade:</strong>{$comment.grade}/5<br>
-        </p> <br>
+
+        </div>
+        <hr />
     {/foreach}
 </div>
+
 <div class="rte">
     <form action="" method="POST" id="comment-form">
         {if $enable_grades eq 1}
             <div class="form-group">
-                <label for="grade">Grade:</label>
+                <label for="grade">{l s='Grade' mod='mymodcomments'} :</label>
                 <input id="grade" name="grade" value="0" type="number" class="rating"
                        min="0" max="5" step="1" data-size="sm" >
             </div>
         {/if}
         {if $enable_comments eq 1}
             <div class="form-group">
-                <label for="comment">Comment:</label>
+                <label for="comment">{l s='Comment' mod='mymodcomments'} :</label>
                 <textarea name="comment" id="comment" class="form-control" ></textarea>
             </div>
         {/if}
+        <div class="form-group">
+            <label for="firstname">
+                {l s='Firstname:' mod='mymodcomments'}
+            </label>
+            <div class="row"><div class="col-xs-4">
+                    <input type="text" name="firstname" id="firstname" class="form-control"
+                           />
+                </div></div>
+        </div>
+        <div class="form-group">
+            <label for="lastname">
+                {l s='Lastname:' mod='mymodcomments'}
+            </label>
+            <div class="row"><div class="col-xs-4">
+                    <input type="text" name="lastname" id="lastname" class="form-control"
+                           />
+                </div></div>
+        </div>
+        <div class="form-group">
+            <label for="email">
+                {l s='Email:' mod='mymodcomments'}
+            </label>
+            <div class="row"><div class="col-xs-4">
+                    <input type="email" name="email" id="email" class="form-control" />
+                </div></div>
+        </div>
+
         <div class="submit">
-            <button type="submit" name="mymod_pc_submit_comment" class="button btn btn-default button-medium"><span>Send<i class="icon-chevron-right right"></i></span></button>
+            <button type="submit" name="mymod_pc_submit_comment" class="button btn btn-default button-medium"><span>{l s='Send' mod='mymodcomments'}<i class="icon-chevron-right right"></i></span></button>
         </div>
     </form>  
 </div>
+

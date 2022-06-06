@@ -5,20 +5,55 @@ class MyModComments extends Module {
     public function __construct() {
         $this->name = 'mymodcomments';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '0.2';
         $this->author = 'Umman Hasanov';
         $this->bootstrap = true;
         parent::__construct();
         $this->displayName = $this->l('My Module Of Product Comments');
         $this->description = $this->l('With this module your customers will be able to grade and comments your products');
+        $this->ps_versions_compliancy = array('min' => '1.5.2', 'max' =>
+            '1.7.9.9');
+        $this->dependencies = array('paypal', 'blockcart');
     }
 
     public function install() {
-        parent::install();
+        // Call install parent method
+        if (!parent::install()) {
+            return false;
+        }
+        // Execute module install SQL statements
         $sql_file = dirname(__FILE__) . '/install/install.sql';
-        $this->loadSQLFile($sql_file);
+        if (!$this->loadSQLFile($sql_file)) {
+            return false;
+        }
 
-        $this->registerHook('displayProductTabContent');
+        // Register hooks
+        if (!$this->registerHook('displayProductTabContent')) {
+            return false;
+        }
+        // Preset configuration values
+        Configuration::updateValue('MYMOD_GRADES', '1');
+        Configuration::updateValue('MYMOD_COMMENTS', '1');
+
+        // All went well!
+        return true;
+    }
+
+    public function uninstall() {
+        // Call uninstall parent method
+        if (!parent::uninstall()) {
+            return false;
+        }
+        // Execute module uninstall SQL statements
+        $sql_file = dirname(__FILE__) . '/insatll/uninstall.sql';
+        if (!$this->loadSQLFile($sql_file)) {
+            return false;
+        }
+        // Delete configuration values
+        Configuration::deleteByName('MYMOD_GRADES');
+        Configuration::deleteByName('MYMOD_COMMENTS');
+
+        // All went well!
         return true;
     }
 
@@ -48,11 +83,17 @@ class MyModComments extends Module {
     public function processProductTabContent() {
         if (Tools::isSubmit('mymod_pc_submit_comment')) {
             $id_product = Tools::getValue('id_product');
+            $firstname = Tools::getValue('firstname');
+            $lastname = Tools::getValue('lastname');
+            $email = Tools::getValue('email');
             $grade = Tools::getValue('grade');
             $comment = Tools::getValue('comment');
             $insert = array(
                 'id_product' => (int) $id_product,
-                'grade' => (int) $grade,
+                'firstname' => pSQL($firstname),
+                'lastname' => pSQL($lastname),
+                'email' => pSQL($email),
+                'grade' => (int)$grade,
                 'comment' => pSQL($comment),
                 'date_add' => date('Y-m-d  H:i:s'),
             );
@@ -88,10 +129,12 @@ class MyModComments extends Module {
 
         // Execute each SQL statement
         $result = true;
-        foreach ($sql_requests as $request)
-            if (!empty($request))
+        foreach ($sql_requests as $request) {
+            if (!empty($request)) {
                 $result &= Db::getInstance()->execute(trim($request));
-        return $result;
+                return $result;
+            }
+        }
     }
 
     public function hookDisplayProductTabContent($params) {
