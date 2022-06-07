@@ -107,7 +107,10 @@ class MyModComments extends Module {
         $enable_comments = Configuration::get('MYMOD_COMMENTS');
 
         $id_product = Tools::getValue('id_product');
-        $comments = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'mymod_comment WHERE id_product= ' . (int) $id_product);
+        $comments = Db::getInstance()->executeS('
+        SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment`
+        WHERE `id_product` = ' . (int) $id_product . '
+        ORDER BY `date_add` DESC LIMIT 3');
         $this->context->controller->addCSS($this->_path . 'views/css/mymodcomments.css', 'all');
         $this->context->controller->addJS($this->_path . 'views/js/mymodcomments.js');
         $this->context->controller->addJQueryUI('ui.slider');
@@ -145,8 +148,8 @@ class MyModComments extends Module {
 
     public function onClickOption($type, $href = false) {
         $confirm_reset = $this->l('Reseting this module will delete all comments from your database, are you sure you want to reset it?');
-        
-        $reset_callback = "return mymodcomments_reset('".addslashes($confirm_reset)."');";
+
+        $reset_callback = "return mymodcomments_reset('" . addslashes($confirm_reset) . "');";
         $matchType = array(
             'reset' => $reset_callback,
             'delete' => "return confirm('Confirm delete?')",
