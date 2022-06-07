@@ -160,15 +160,16 @@ class MyModComments extends Module {
     }
 
     public function hookDisplayBackOfficeHeader($params) {
+
 // If we are not on section modules, we do not add JS file
         if (Tools::getValue('controller') != 'AdminModules')
             return '';
+
 // Assign module mymodcomments base dir
-        $this->context->smarty->assign('pc_base_dir',
-                __PS_BASE_URI__ . 'modules/' . $this->name . '/');
+        $this->context->smarty->assign('pc_base_dir', __PS_BASE_URI__ . 'modules/' . $this->name . '/');
+
 // Display template
-        return $this->display(__FILE__,
-                        'displayBackOfficeHeader.tpl');
+        return $this->display(__FILE__, 'displayBackOfficeHeader.tpl');
     }
 
 }
