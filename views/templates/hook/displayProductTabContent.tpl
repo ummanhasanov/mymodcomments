@@ -4,13 +4,14 @@
 
 <h3 class="page-product-heading" id="mymodcomments-content-tab"{if isset($new_comment_posted)} data-scroll="true"{/if}>{l s='Product Comments' mod='mymodcomments'}</h3>
 <div class="rte">
-
     {foreach from=$comments item=comment}
         <div class="mymodcomments-comment"> 
             <img
                 src="http://www.gravatar.com/avatar/{$comment.email|trim|strtolower|md5}?
                 s=45" class="pull-left img-thumbnail mymodcomments-avatar" />
-            <div> {$comment.firstname} {$comment.lastname|substr:0:1}</div>
+            <div> {$comment.firstname} {$comment.lastname|substr:0:1}. <small>
+                    {$comment.date_add|substr:0:10}</small>
+            </div>
             <strong>{l s='Grade' mod='mymodcomments'} :</strong>{$comment.grade}/5<br>
             <strong>
                 {l s='Comment' mod='mymodcomments'}  #{$comment.id_mymod_comment}:</strong>
@@ -22,10 +23,20 @@
 </div>
 
 <div class="rte">
+    {assign var=params value=[
+        'module_action' => 'list',
+        'id_product'=> $smarty.get.id_product
+    ]}
+    <a href="{$link->getModuleLink('mymodcomments', 'comments', $params)}" target="_blank">
+        {l s='See all comments' mod='mymodcomments'}
+    </a>
+</div>
+
+<div class="rte">
     <form action="" method="POST" id="comment-form">
         <div class="form-group">
             <label for="firstname">
-                {l s='Firstname:' mod='mymodcomments'}
+                {l s='Firstname' mod='mymodcomments'}:
             </label>
             <div class="row"><div class="col-xs-4">
                     <input type="text" name="firstname" id="firstname" class="form-control"
@@ -34,7 +45,7 @@
         </div>
         <div class="form-group">
             <label for="lastname">
-                {l s='Lastname:' mod='mymodcomments'}
+                {l s='Lastname' mod='mymodcomments'}:
             </label>
             <div class="row"><div class="col-xs-4">
                     <input type="text" name="lastname" id="lastname" class="form-control"
@@ -43,7 +54,7 @@
         </div>
         <div class="form-group">
             <label for="email">
-                {l s='Email:' mod='mymodcomments'}
+                {l s='Email' mod='mymodcomments'}:
             </label>
             <div class="row"><div class="col-xs-4">
                     <input type="email" name="email" id="email" class="form-control" />
