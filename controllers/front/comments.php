@@ -5,10 +5,13 @@ class MyModCommentsCommentsModuleFrontController extends ModuleFrontController {
     public $product;
 
     public function setMedia() {
+        
         // We call the parent method
         parent::setMedia();
+        
         // Save the module path in a variable
         $this->path = __PS_BASE_URI__ . 'modules/mymodcomments/';
+        
         // Include the module CSS and JS files needed
         $this->context->controller->addCSS($this->path . 'views/css/starrating.css', 'all');
         $this->context->controller->addJS($this->path . 'views/js/star-rating.js');
