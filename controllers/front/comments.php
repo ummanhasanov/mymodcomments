@@ -5,18 +5,56 @@ class MyModCommentsCommentsModuleFrontController extends ModuleFrontController {
     public $product;
 
     public function setMedia() {
-        
+
         // We call the parent method
         parent::setMedia();
-        
+
         // Save the module path in a variable
         $this->path = __PS_BASE_URI__ . 'modules/mymodcomments/';
-        
+
         // Include the module CSS and JS files needed
         $this->context->controller->addCSS($this->path . 'views/css/starrating.css', 'all');
         $this->context->controller->addJS($this->path . 'views/js/star-rating.js');
-        $this->context->controller->addCSS($this->path.'views/css/mymodcomments.css', 'all');
-        $this->context->controller->addJS($this->path.'views/js/mymodcomments.js');
+        $this->context->controller->addCSS($this->path . 'views/css/mymodcomments.css', 'all');
+        $this->context->controller->addJS($this->path . 'views/js/mymodcomments.js');
+    }
+
+    protected function initList() {
+
+
+        // Get number of comments
+        $nb_comments = Db::getInstance()->getValue('
+        SELECT COUNT(`id_product`)
+        FROM `' . _DB_PREFIX_ . 'mymod_comment`
+        WHERE `id_product` = ' . (int) $this->product->id);
+        // Init
+        $nb_per_page = 10;
+
+        $nb_pages = ceil($nb_comments / $nb_per_page);
+        $page = 1;
+        if (Tools::getValue('page') != '') {
+            $page = (int) $_GET['page'];
+        }
+
+        //  SQL limit
+        $limit_start = ($page - 1) * $nb_per_page;
+        $limit_end = $nb_per_page;
+
+        //  Get comments
+        $comments = Db::getInstance()->executeS(
+                'SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment` 
+                WHERE `id_product` = ' . (int) $this->product->id .
+                ' ORDER BY `date_add` DESC
+                LIMIT ' . (int) $limit_start . ',' . (int) $limit_end);
+
+        //  Assign comments and product objects
+        $this->context->smarty->assign('comments', $comments);
+        $this->context->smarty->assign('product', $this->product);
+        $this->context->smarty->assign('page', $page);
+        $this->context->smarty->assign('nb_pages', $nb_pages);
+        
+        
+        $this->setTemplate('list.tpl');
     }
 
     public function initContent() {
@@ -31,18 +69,6 @@ class MyModCommentsCommentsModuleFrontController extends ModuleFrontController {
         if ($id_product > 0 && isset($actions_list[$module_action])) {
             $this->{$actions_list[$module_action]}();
         }
-    }
-
-    protected function initList() {
-//        Get comments
-        $comments = Db::getInstance()->executeS(
-                'SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment` 
-                WHERE `id_product` = ' . (int) $this->product->id .
-                ' ORDER BY `date_add` DESC');
-//        Assign comments and product objects
-        $this->context->smarty->assign('comments', $comments);
-        $this->context->smarty->assign('product', $this->product);
-        $this->setTemplate('list.tpl');
     }
 
 }
