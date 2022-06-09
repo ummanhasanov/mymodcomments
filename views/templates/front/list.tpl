@@ -18,6 +18,3 @@
         <hr />
     {/foreach}
 </div>
-<div>{$comment.firstname} {$comment.lastname|substr:0:1}. <small>
-        {$comment.date_add|substr:0:10}</small>
-</div>
