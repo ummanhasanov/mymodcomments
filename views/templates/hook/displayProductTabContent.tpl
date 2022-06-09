@@ -23,19 +23,6 @@
 
 <div class="rte">
     <form action="" method="POST" id="comment-form">
-        {if $enable_grades eq 1}
-            <div class="form-group">
-                <label for="grade">{l s='Grade' mod='mymodcomments'} :</label>
-                <input id="grade" name="grade" value="0" type="number" class="rating"
-                       min="0" max="5" step="1" data-size="sm" >
-            </div>
-        {/if}
-        {if $enable_comments eq 1}
-            <div class="form-group">
-                <label for="comment">{l s='Comment' mod='mymodcomments'} :</label>
-                <textarea name="comment" id="comment" class="form-control" ></textarea>
-            </div>
-        {/if}
         <div class="form-group">
             <label for="firstname">
                 {l s='Firstname:' mod='mymodcomments'}
@@ -62,6 +49,21 @@
                     <input type="email" name="email" id="email" class="form-control" />
                 </div></div>
         </div>
+
+        {if $enable_grades eq 1}
+            <div class="form-group">
+                <label for="grade">{l s='Grade' mod='mymodcomments'} :</label>
+                <input id="grade" name="grade" value="0" type="number" class="rating"
+                       min="0" max="5" step="1" data-size="sm" >
+            </div>
+        {/if}
+        {if $enable_comments eq 1}
+            <div class="form-group">
+                <label for="comment">{l s='Comment' mod='mymodcomments'} :</label>
+                <textarea name="comment" id="comment" class="form-control" ></textarea>
+            </div>
+        {/if}
+
 
         <div class="submit">
             <button type="submit" name="mymod_pc_submit_comment" class="button btn btn-default button-medium"><span>{l s='Send' mod='mymodcomments'}<i class="icon-chevron-right right"></i></span></button>
