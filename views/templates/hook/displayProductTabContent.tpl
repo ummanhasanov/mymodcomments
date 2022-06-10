@@ -6,30 +6,22 @@
 <div class="rte">
     {foreach from=$comments item=comment}
         <div class="mymodcomments-comment"> 
-            <img
-                src="http://www.gravatar.com/avatar/{$comment.email|trim|strtolower|md5}?
-                s=45" class="pull-left img-thumbnail mymodcomments-avatar" />
-            <div> {$comment.firstname} {$comment.lastname|substr:0:1}. <small>
-                    {$comment.date_add|substr:0:10}</small>
-            </div>
-            <strong>{l s='Grade' mod='mymodcomments'} :</strong>{$comment.grade}/5<br>
-            <strong>
-                {l s='Comment' mod='mymodcomments'}  #{$comment.id_mymod_comment}:</strong>
-            {$comment.comment}<br>
-
+            <img src="http://www.gravatar.com/avatar/{$comment.email|trim|strtolower|md5}? s=45" class="pull-left img-thumbnail mymodcomments-avatar" />
+            <div> {$comment.firstname} {$comment.lastname|substr:0:1}. <small>{$comment.date_add|substr:0:10}</small></div>
+            <strong>{l s='Grade' mod='mymodcomments'} :</strong>{$comment.grade}/5<br><strong>{l s='Comment' mod='mymodcomments'}  #{$comment.id_mymod_comment}:</strong>{$comment.comment}<br>
         </div>
-        <hr />
+        <hr/>
     {/foreach}
 </div>
 
 <div class="rte">
     {assign var=params value=[
         'module_action' => 'list',
-        'id_product'=> $smarty.get.id_product
+        'product_rewrite' => $product->link_rewrite,
+        'id_product'=> $smarty.get.id_product,
+        'page' => 1
     ]}
-    <a href="{$link->getModuleLink('mymodcomments', 'comments', $params)}" target="_blank">
-        {l s='See all comments' mod='mymodcomments'}
-    </a>
+    <a href="{$link->getModuleLink('mymodcomments', 'comments', $params)}" target="_blank">{l s='See all comments' mod='mymodcomments'}  </a>
 </div>
 
 <div class="rte">

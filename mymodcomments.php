@@ -37,6 +37,13 @@ class MyModComments extends Module {
 
         // All went well!
         return true;
+
+        // Register hooks
+        if (!$this->registerHook('displayProductTabContent') ||
+                !$this->registerHook('displayBackOfficeHeader') ||
+                !$this->registerHook('ModuleRoutes')) {
+            return false;
+        }
     }
 
     public function uninstall() {
@@ -120,6 +127,8 @@ class MyModComments extends Module {
         $this->context->smarty->assign('enable_grades', $enable_grades);
         $this->context->smarty->assign('enable_comments', $enable_comments);
         $this->context->smarty->assign('comments', $comments);
+        $product = new Product((int) $id_product, false, $this->context->cookie->id_lang);
+        $this->context->smarty->assign('product', $product);
     }
 
     public function loadSQLFile($sql_file) {
@@ -170,6 +179,28 @@ class MyModComments extends Module {
 
 // Display template
         return $this->display(__FILE__, 'displayBackOfficeHeader.tpl');
+    }
+
+    public function hookModuleRoutes() {
+        return array(
+            'module-mymodcomments-comments' => array(
+                'controller' => 'coments',
+                'rule' => 'product-comments{/:module_action}{/:product_rewrite}
+                {/:id_product}/page{/:page}', 'keywords' => array(
+                    'id_product' => array(
+                        'regexp' => '[\d]+',
+                        'param' => 'id_product'),
+                    'page' => array(
+                        'regexp' => '[\d]+',
+                        'param' => 'page'),
+                    'module_action' => array(
+                        'regexp' => '[\w]+',
+                        'param' => 'module_action'),
+                    'params' => array('fc' => 'module', 'module' => 'mymodcomments', 'controller' => 'comments'),
+                    'product_rewrite' => array('regexp' => '[\w-_]+', 'param' => 'product_rewrite')
+                )
+            )
+        );
     }
 
 }
