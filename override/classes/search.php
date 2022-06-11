@@ -32,6 +32,8 @@ class Search extends SearchCore {
         if ($gc['id_product'] == $p['id_product']) {
             $products[$kp]['mymodcomments']['grade_avg'] = round($gc['grade_avg']);
             $products[$kp]['mymodcomments']['nb_comments'] = $gc['nb_comments'];
+            $find['result'] = $products;
+
         }
 
         // Return products
