@@ -11,8 +11,8 @@ class MyModComments extends Module {
         parent::__construct();
         $this->displayName = $this->l('My Module Of Product Comments');
         $this->description = $this->l('With this module your customers will be able to grade and comments your products');
-        $this->ps_versions_compliancy = array('min' => '1.5.2', 'max' =>
-            '1.7.9.9');
+//        $this->ps_versions_compliancy = array('min' => '1.5.2', 'max' =>
+//            '1.7.9.9');
 //        $this->dependencies = array('paypal', 'blockcart');
     }
 
@@ -31,12 +31,6 @@ class MyModComments extends Module {
         if (!$this->registerHook('displayProductTabContent')) {
             return false;
         }
-        // Preset configuration values
-        Configuration::updateValue('MYMOD_GRADES', '1');
-        Configuration::updateValue('MYMOD_COMMENTS', '1');
-
-        // All went well!
-        return true;
 
         // Register hooks
         if (!$this->registerHook('displayProductTabContent') ||
@@ -44,6 +38,13 @@ class MyModComments extends Module {
                 !$this->registerHook('ModuleRoutes')) {
             return false;
         }
+
+        // Preset configuration values
+        Configuration::updateValue('MYMOD_GRADES', '1');
+        Configuration::updateValue('MYMOD_COMMENTS', '1');
+
+        // All went well!
+        return true;
     }
 
     public function uninstall() {
@@ -52,16 +53,54 @@ class MyModComments extends Module {
             return false;
         }
         // Execute module uninstall SQL statements
-        $sql_file = dirname(__FILE__) . '/insatll/uninstall.sql';
-        if (!$this->loadSQLFile($sql_file)) {
-            return false;
-        }
+//        $sql_file = dirname(__FILE__) . '/insatll/uninstall.sql';
+//        if (!$this->loadSQLFile($sql_file)) {
+//            return false;
+//        }
         // Delete configuration values
         Configuration::deleteByName('MYMOD_GRADES');
         Configuration::deleteByName('MYMOD_COMMENTS');
 
         // All went well!
         return true;
+    }
+
+    public function loadSQLFile($sql_file) {
+        // Get install SQL file content
+        $sql_content = file_get_contents($sql_file);
+
+        // Replace prefix and store SQL command in array
+        $sql_content = str_replace('PREFIX_', _DB_PREFIX_, $sql_content);
+        $sql_requests = preg_split("/;\s*[\r\n]+/", $sql_content);
+
+        // Execute each SQL statement
+        $result = true;
+        foreach ($sql_requests as $request) {
+            if (!empty($request)) {
+                $result &= Db::getInstance()->execute(trim($request));
+                return $result;
+            }
+        }
+    }
+
+    public function onClickOption($type, $href = false) {
+        $confirm_reset = $this->l('Reseting this module will delete all comments from your database, are you sure you want to reset it?');
+
+        $reset_callback = "return mymodcomments_reset('" . addslashes($confirm_reset) . "');";
+        $matchType = array(
+            'reset' => $reset_callback,
+            'delete' => "return confirm('Confirm delete?')",
+        );
+        if (isset($matchType[$type])) {
+            return $matchType[$type];
+        }
+        return '';
+    }
+
+    public function hookDisplayProductTabContent($params) {
+        $this->processProductTabContent();
+        $this->assignProductTabContent();
+        return $this->display(__FILE__, 'displayProductTabContent.tpl');
     }
 
     public function processConfiguration() {
@@ -129,43 +168,6 @@ class MyModComments extends Module {
         $this->context->smarty->assign('comments', $comments);
         $product = new Product((int) $id_product, false, $this->context->cookie->id_lang);
         $this->context->smarty->assign('product', $product);
-    }
-
-    public function loadSQLFile($sql_file) {
-        // Get install SQL file content
-        $sql_content = file_get_contents($sql_file);
-
-        // Replace prefix and store SQL command in array
-        $sql_content = str_replace('PREFIX_', _DB_PREFIX_, $sql_content);
-        $sql_requests = preg_split("/;\s*[\r\n]+/", $sql_content);
-
-        // Execute each SQL statement
-        $result = true;
-        foreach ($sql_requests as $request) {
-            if (!empty($request)) {
-                $result &= Db::getInstance()->execute(trim($request));
-                return $result;
-            }
-        }
-    }
-
-    public function hookDisplayProductTabContent($params) {
-        $this->processProductTabContent();
-        $this->assignProductTabContent();
-        return $this->display(__FILE__, 'displayProductTabContent.tpl');
-    }
-
-    public function onClickOption($type, $href = false) {
-        $confirm_reset = $this->l('Reseting this module will delete all comments from your database, are you sure you want to reset it?');
-
-        $reset_callback = "return mymodcomments_reset('" . addslashes($confirm_reset) . "');";
-        $matchType = array(
-            'reset' => $reset_callback,
-            'delete' => "return confirm('Confirm delete?')",
-        );
-        if (isset($matchType[$type]))
-            return $matchType[$type];
-        return '';
     }
 
     public function hookDisplayBackOfficeHeader($params) {
