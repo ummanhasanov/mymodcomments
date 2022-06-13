@@ -1,4 +1,5 @@
 <?php
+require_once(dirname(__FILE__).'/MyModComment.php');
 
 class MyModComments extends Module {
 
@@ -27,11 +28,7 @@ class MyModComments extends Module {
             return false;
         }
 
-        // Register hooks
-        if (!$this->registerHook('displayProductTabContent')) {
-            return false;
-        }
-
+     
         // Register hooks
         if (!$this->registerHook('displayProductTabContent') ||
                 !$this->registerHook('displayBackOfficeHeader') ||
