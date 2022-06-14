@@ -1,5 +1,6 @@
 <?php
-require_once(dirname(__FILE__).'/MyModComment.php');
+
+require_once(dirname(__FILE__) . '/classes/MyModComment.php');
 
 class MyModComments extends Module {
 
@@ -12,9 +13,6 @@ class MyModComments extends Module {
         parent::__construct();
         $this->displayName = $this->l('My Module Of Product Comments');
         $this->description = $this->l('With this module your customers will be able to grade and comments your products');
-//        $this->ps_versions_compliancy = array('min' => '1.5.2', 'max' =>
-//            '1.7.9.9');
-//        $this->dependencies = array('paypal', 'blockcart');
     }
 
     public function install() {
@@ -28,7 +26,7 @@ class MyModComments extends Module {
             return false;
         }
 
-     
+
         // Register hooks
         if (!$this->registerHook('displayProductTabContent') ||
                 !$this->registerHook('displayBackOfficeHeader') ||
@@ -75,8 +73,7 @@ class MyModComments extends Module {
         foreach ($sql_requests as $request) {
             if (!empty($request)) {
                 $result &= Db::getInstance()->execute(trim($request));
-                return $result;
-            }
+            } return $result;
         }
     }
 
@@ -110,16 +107,9 @@ class MyModComments extends Module {
         }
     }
 
-    public function assignConfiguration() {
-        $enable_grades = Configuration::get('MYMOD_GRADES');
-        $enable_comments = Configuration::get('MYMOD_COMMENTS');
-        $this->context->smarty->assign('enable_grades', $enable_grades);
-        $this->context->smarty->assign('enable_comments', $enable_comments);
-    }
 
     public function getContent() {
         $this->processConfiguration();
-        $this->assignConfiguration();
         return $this->display(__FILE__, 'getContent.tpl');
     }
 
@@ -131,16 +121,29 @@ class MyModComments extends Module {
             $email = Tools::getValue('email');
             $grade = Tools::getValue('grade');
             $comment = Tools::getValue('comment');
-            $insert = array(
-                'id_product' => (int) $id_product,
-                'firstname' => pSQL($firstname),
-                'lastname' => pSQL($lastname),
-                'email' => pSQL($email),
-                'grade' => (int) $grade,
-                'comment' => pSQL($comment),
-                'date_add' => date('Y-m-d  H:i:s'),
-            );
-            Db::getInstance()->insert('mymod_comment', $insert);
+//            $insert = array(
+//                'id_product' => (int) $id_product,
+//                'firstname' => pSQL($firstname),
+//                'lastname' => pSQL($lastname),
+//                'email' => pSQL($email),
+//                'grade' => (int) $grade,
+//                'comment' => pSQL($comment),
+//                'date_add' => date('Y-m-d  H:i:s'),
+//            );
+//            Db::getInstance()->insert('mymod_comment', $insert);
+            if (!Validate::isName($firstname) || !Validate::isName($lastname) || !Validate::isEmail($email)) {
+                $this->context->smarty->assign('new_comment_posted', 'error');
+                return false;
+            }
+            $MyModComment = new MyModComment();
+            $MyModComment->id_product = (int) $id_product;
+            $MyModComment->firstname = $firstname;
+            $MyModComment->lastname = $lastname;
+            $MyModComment->email = $email;
+            $MyModComment->grade = (int) $grade;
+            $MyModComment->comment = nl2br($comment);
+            $MyModComment->add();
+
             $this->context->smarty->assign('new_comment_posted', 'true');
         }
     }
@@ -150,10 +153,7 @@ class MyModComments extends Module {
         $enable_comments = Configuration::get('MYMOD_COMMENTS');
 
         $id_product = Tools::getValue('id_product');
-        $comments = Db::getInstance()->executeS('
-        SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment`
-        WHERE `id_product` = ' . (int) $id_product . '
-        ORDER BY `date_add` DESC LIMIT 3');
+        $comments = MyModComment::getProductComments($id_product, 0, 3);
         $this->context->controller->addCSS($this->_path . 'views/css/mymodcomments.css', 'all');
         $this->context->controller->addJS($this->_path . 'views/js/mymodcomments.js');
         $this->context->controller->addJQueryUI('ui.slider');
@@ -170,8 +170,9 @@ class MyModComments extends Module {
     public function hookDisplayBackOfficeHeader($params) {
 
 // If we are not on section modules, we do not add JS file
-        if (Tools::getValue('controller') != 'AdminModules')
+        if (Tools::getValue('controller') != 'AdminModules') {
             return '';
+        }
 
 // Assign module mymodcomments base dir
         $this->context->smarty->assign('pc_base_dir', __PS_BASE_URI__ . 'modules/' . $this->name . '/');

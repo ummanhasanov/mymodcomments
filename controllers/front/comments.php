@@ -23,10 +23,7 @@ class MyModCommentsCommentsModuleFrontController extends ModuleFrontController {
 
 
         // Get number of comments
-        $nb_comments = Db::getInstance()->getValue('
-        SELECT COUNT(`id_product`)
-        FROM `' . _DB_PREFIX_ . 'mymod_comment`
-        WHERE `id_product` = ' . (int) $this->product->id);
+        $nb_comments = MyModComment::getProductNbComments($this->product->id);
         // Init
         $nb_per_page = 10;
 
@@ -41,19 +38,13 @@ class MyModCommentsCommentsModuleFrontController extends ModuleFrontController {
         $limit_end = $nb_per_page;
 
         //  Get comments
-        $comments = Db::getInstance()->executeS(
-                'SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment` 
-                WHERE `id_product` = ' . (int) $this->product->id .
-                ' ORDER BY `date_add` DESC
-                LIMIT ' . (int) $limit_start . ',' . (int) $limit_end);
-
+        $comments = MyModComment::getProductComments($this->product->id, $limit_start, $limit_end);
         //  Assign comments and product objects
         $this->context->smarty->assign('comments', $comments);
         $this->context->smarty->assign('product', $this->product);
         $this->context->smarty->assign('page', $page);
         $this->context->smarty->assign('nb_pages', $nb_pages);
-        
-        
+
         $this->setTemplate('list.tpl');
     }
 

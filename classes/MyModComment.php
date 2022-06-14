@@ -14,13 +14,9 @@ class MyModComment extends ObjectModel {
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
-        'table' => 'mymod_comment',
-        'primary' => 'id_mymod_comment',
-        'multilang' => false,
+    public static $definition = array('table' => 'mymod_comment', 'primary' => 'id_mymod_comment', 'multilang' => false,
         'fields' => array(
-            'id_product' => array(
-                'type' => self:: TYPE_INT, 'validate' => 'isUnsugnedId', 'required' => true),
+            'id_product' => array('type' => self:: TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
             'firstname' => array('type' => self:: TYPE_STRING, 'validate' => 'IsName', 'size' => 20),
             'lastname' => array('type' => self:: TYPE_STRING, 'validate' => 'IsName', 'size' => 20),
             'email' => array('type' => self:: TYPE_STRING, 'validate' => 'IsEmail'),
@@ -29,5 +25,42 @@ class MyModComment extends ObjectModel {
             'date_add' => array('type' => self:: TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
         ),
     );
+
+//   getProductNbComments:
+    public static function getProductNbComments($id_product) {
+        $nb_comments = Db::getInstance()->getValue('
+        SELECT COUNT(`id_product`)
+        FROM `' . _DB_PREFIX_ . 'mymod_comment`
+        WHERE `id_product` = ' . (int) $id_product);
+
+        return $nb_comments;
+    }
+
+//    getProductComments
+    public static function getProductComments($id_product, $limit_start, $limit_end = false) {
+//        $limit = (int) $limit_start;
+        $limit = (int) $limit_start;
+        if ($limit_end) {
+            $limit = (int) $limit_start . ',' . (int) $limit_end;
+        }
+        $comments = Db::getInstance()->executeS('
+        SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment`
+        WHERE `id_product` = ' . (int) $id_product . '
+        ORDER BY `date_add` DESC
+        LIMIT ' . $limit);
+
+        return $comments;
+    }
+
+//    getInfosOnProductsList
+    public static function getInfosOnProductsList($id_product_list) {
+        $grades_comments = Db::getInstance()->executeS('
+        SELECT `id_product`, AVG(`grade`) as grade_avg,
+        COUNT(`id_mymod_comment`) as nb_comments
+        FROM `' . _DB_PREFIX_ . 'mymod_comment`
+        WHERE `id_product` IN (' . implode(',', $id_product_list) . ')
+        GROUP BY `id_product`');
+        return $grades_comments;
+    }
 
 }
