@@ -135,45 +135,7 @@ class MyModComments extends Module {
         }
     }
 
-//    public function hookDisplayBackOfficeHeader($params) {
-//
-//// If we are not on section modules, we do not add JS file
-//        if (Tools::getValue('controller') != 'AdminModules') {
-//            return '';
-//        }
-//        // Assign module mymodcomments base dir
-//        $this->context->smarty->assign('pc_base_dir', __PS_BASE_URI__ . 'modules/' . $this->name . '/');
-//
-//        // Display template
-//        return $this->display(__FILE__, 'displayBackOfficeHeader.tpl');
-//    }
-//    public function hookModuleRoutes() {
-//        return array(
-//            'module-mymodcomments-comments' => array(
-//                'controller' => 'coments',
-//                'rule' => 'product-comments{/:module_action}{/:product_rewrite}
-//                {/:id_product}/page{/:page}', 'keywords' => array(
-//                    'id_product' => array(
-//                        'regexp' => '[\d]+',
-//                        'param' => 'id_product'),
-//                    'page' => array(
-//                        'regexp' => '[\d]+',
-//                        'param' => 'page'),
-//                    'module_action' => array(
-//                        'regexp' => '[\w]+',
-//                        'param' => 'module_action'),
-//                    'params' => array('fc' => 'module', 'module' => 'mymodcomments', 'controller' => 'comments'),
-//                    'product_rewrite' => array('regexp' => '[\w-_]+', 'param' => 'product_rewrite')
-//                )
-//            )
-//        );
-//    }
-//    public function getContent() {
-//        $this->processConfiguration();
-//        $html_confirmation_message = $this->display(__FILE__, 'getContent.tpl');
-//        $html_form = $this->renderForm();
-//        return $html_confirmation_message . $html_form;
-//    }
+
 
     public function renderForm() {
         $fields_form = array(
