@@ -91,10 +91,38 @@ class MyModComments extends Module {
         return '';
     }
 
+    public function getHookController($hook_name) {
+        //        Include the controller file
+        require_once (dirname(__FILE__) . '/controllers/hook/' . $hook_name . '.php');
+
+        //        Build the controller name dinamically
+        $controller_name = $this->name . $hook_name . 'Controller';
+
+        //        Instantiate controller
+        $controller = new $controller_name($this, __FILE__, $this->_path);
+
+        //        Return the controller
+        return $controller;
+    }
+
     public function hookDisplayProductTabContent($params) {
-        $this->processProductTabContent();
-        $this->assignProductTabContent();
-        return $this->display(__FILE__, 'displayProductTabContent.tpl');
+        $controller = $this->getHookController('displayProductTabContent');
+        return $controller->run($params);
+    }
+
+    public function hookDisplayBackOfficeHeader($params) {
+        $controller = $this->getHookController('displayBackOfficeHeader');
+        return $controller->run($params);
+    }
+
+    public function hookModulesRoutes() {
+        $controller = $this->getHookController('modulesRoutes');
+        return $controller->run();
+    }
+
+    public function getContent() {
+        $controller = $this->getHookController('getContent');
+        return $controller->run();
     }
 
     public function processConfiguration() {
@@ -107,102 +135,45 @@ class MyModComments extends Module {
         }
     }
 
-    public function processProductTabContent() {
-        if (Tools::isSubmit('mymod_pc_submit_comment')) {
-            $id_product = Tools::getValue('id_product');
-            $firstname = Tools::getValue('firstname');
-            $lastname = Tools::getValue('lastname');
-            $email = Tools::getValue('email');
-            $grade = Tools::getValue('grade');
-            $comment = Tools::getValue('comment');
-//            $insert = array(
-//                'id_product' => (int) $id_product,
-//                'firstname' => pSQL($firstname),
-//                'lastname' => pSQL($lastname),
-//                'email' => pSQL($email),
-//                'grade' => (int) $grade,
-//                'comment' => pSQL($comment),
-//                'date_add' => date('Y-m-d  H:i:s'),
-//            );
-//            Db::getInstance()->insert('mymod_comment', $insert);
-            if (!Validate::isName($firstname) || !Validate::isName($lastname) || !Validate::isEmail($email)) {
-                $this->context->smarty->assign('new_comment_posted', 'error');
-                return false;
-            }
-            $MyModComment = new MyModComment();
-            $MyModComment->id_product = (int) $id_product;
-            $MyModComment->firstname = $firstname;
-            $MyModComment->lastname = $lastname;
-            $MyModComment->email = $email;
-            $MyModComment->grade = (int) $grade;
-            $MyModComment->comment = nl2br($comment);
-            $MyModComment->add();
-
-            $this->context->smarty->assign('new_comment_posted', 'true');
-        }
-    }
-
-    public function assignProductTabContent() {
-        $enable_grades = Configuration::get('MYMOD_GRADES');
-        $enable_comments = Configuration::get('MYMOD_COMMENTS');
-
-        $id_product = Tools::getValue('id_product');
-        $comments = MyModComment::getProductComments($id_product, 0, 3);
-        $this->context->controller->addCSS($this->_path . 'views/css/mymodcomments.css', 'all');
-        $this->context->controller->addJS($this->_path . 'views/js/mymodcomments.js');
-        $this->context->controller->addJQueryUI('ui.slider');
-        $this->context->controller->addCSS($this->_path . 'views/css/star-rating.css', 'all');
-        $this->context->controller->addJS($this->_path . 'views/js/star-rating.js');
-
-        $this->context->smarty->assign('enable_grades', $enable_grades);
-        $this->context->smarty->assign('enable_comments', $enable_comments);
-        $this->context->smarty->assign('comments', $comments);
-        $product = new Product((int) $id_product, false, $this->context->cookie->id_lang);
-        $this->context->smarty->assign('product', $product);
-    }
-
-    public function hookDisplayBackOfficeHeader($params) {
-
-// If we are not on section modules, we do not add JS file
-        if (Tools::getValue('controller') != 'AdminModules') {
-            return '';
-        }
-
-// Assign module mymodcomments base dir
-        $this->context->smarty->assign('pc_base_dir', __PS_BASE_URI__ . 'modules/' . $this->name . '/');
-
-// Display template
-        return $this->display(__FILE__, 'displayBackOfficeHeader.tpl');
-    }
-
-    public function hookModuleRoutes() {
-        return array(
-            'module-mymodcomments-comments' => array(
-                'controller' => 'coments',
-                'rule' => 'product-comments{/:module_action}{/:product_rewrite}
-                {/:id_product}/page{/:page}', 'keywords' => array(
-                    'id_product' => array(
-                        'regexp' => '[\d]+',
-                        'param' => 'id_product'),
-                    'page' => array(
-                        'regexp' => '[\d]+',
-                        'param' => 'page'),
-                    'module_action' => array(
-                        'regexp' => '[\w]+',
-                        'param' => 'module_action'),
-                    'params' => array('fc' => 'module', 'module' => 'mymodcomments', 'controller' => 'comments'),
-                    'product_rewrite' => array('regexp' => '[\w-_]+', 'param' => 'product_rewrite')
-                )
-            )
-        );
-    }
-
-    public function getContent() {
-        $this->processConfiguration();
-        $html_confirmation_message = $this->display(__FILE__, 'getContent.tpl');
-        $html_form = $this->renderForm();
-        return $html_confirmation_message . $html_form;
-    }
+//    public function hookDisplayBackOfficeHeader($params) {
+//
+//// If we are not on section modules, we do not add JS file
+//        if (Tools::getValue('controller') != 'AdminModules') {
+//            return '';
+//        }
+//        // Assign module mymodcomments base dir
+//        $this->context->smarty->assign('pc_base_dir', __PS_BASE_URI__ . 'modules/' . $this->name . '/');
+//
+//        // Display template
+//        return $this->display(__FILE__, 'displayBackOfficeHeader.tpl');
+//    }
+//    public function hookModuleRoutes() {
+//        return array(
+//            'module-mymodcomments-comments' => array(
+//                'controller' => 'coments',
+//                'rule' => 'product-comments{/:module_action}{/:product_rewrite}
+//                {/:id_product}/page{/:page}', 'keywords' => array(
+//                    'id_product' => array(
+//                        'regexp' => '[\d]+',
+//                        'param' => 'id_product'),
+//                    'page' => array(
+//                        'regexp' => '[\d]+',
+//                        'param' => 'page'),
+//                    'module_action' => array(
+//                        'regexp' => '[\w]+',
+//                        'param' => 'module_action'),
+//                    'params' => array('fc' => 'module', 'module' => 'mymodcomments', 'controller' => 'comments'),
+//                    'product_rewrite' => array('regexp' => '[\w-_]+', 'param' => 'product_rewrite')
+//                )
+//            )
+//        );
+//    }
+//    public function getContent() {
+//        $this->processConfiguration();
+//        $html_confirmation_message = $this->display(__FILE__, 'getContent.tpl');
+//        $html_form = $this->renderForm();
+//        return $html_confirmation_message . $html_form;
+//    }
 
     public function renderForm() {
         $fields_form = array(
@@ -238,7 +209,7 @@ class MyModComments extends Module {
                 )
             ),
         );
-        
+
         $helper = new HelperForm();
         $helper->table = 'mymodcomments';
         $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
@@ -256,7 +227,7 @@ class MyModComments extends Module {
             ),
             'languages' => $this->context->controller->getLanguages()
         );
-        
+
         return $helper->generateForm(array($fields_form));
     }
 
