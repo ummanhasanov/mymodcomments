@@ -26,6 +26,9 @@ class MyModComments extends Module {
             return false;
         }
 
+        
+        
+        
 
         // Register hooks
         if (!$this->registerHook('displayProductTabContent') ||
