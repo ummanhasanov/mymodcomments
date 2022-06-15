@@ -2,6 +2,18 @@
 
 class MyModCommentsGetContentController {
 
+    private $file;
+    private $module;
+    private $context;
+    private $_path;
+
+    public function __construct($module, $file, $path) {
+        $this->file = $file;
+        $this->module = $module;
+        $this->context = Context::getContext();
+        $this->_path = $path;
+    }
+
     public function processConfiguration() {
         if (Tools::isSubmit('mymod_pc_form')) {
             $enable_grades = Tools::getValue('enable_grades');
@@ -25,9 +37,17 @@ class MyModCommentsGetContentController {
                         'label' => $this->module->l('Enable grades:'),
                         'name' => 'enable_grades',
                         'desc' => $this->module->l('Enable grades on products.'),
-                        'value' => array(
-                            array('id' => 'enable_grades_1', 'value' => 1, 'label' => $this->module->l('Enabled')),
-                            array('id' => 'enable_grades_0', 'value' => 0, 'label' => $this->module->l('Disabled'))
+                        'values' => array(
+                            array(
+                                'id' => 'enable_grades_1',
+                                'value' => 1,
+                                'label' => $this->module->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'enable_grades_0',
+                                'value' => 0,
+                                'label' => $this->module->l('Disabled')
+                            )
                         ),
                     ),
                     array(
@@ -35,20 +55,30 @@ class MyModCommentsGetContentController {
                         'label' => $this->module->l('Enable comments:'),
                         'name' => 'enable_comments',
                         'desc' => $this->module->l('Enable comments on products.'),
-                        'value' => array(
-                            array('id' => 'enable_comments_1', 'value' => 1, 'label' => $this->module->l('Enabled')),
-                            array('id' => 'enable_comments_0', 'value' => 0, 'label' => $this->module->l('Disabled'))
+                        'values' => array(
+                            array(
+                                'id' => 'enable_comments_1',
+                                'value' => 1,
+                                'label' => $this->module->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'enable_comments_0',
+                                'value' => 0,
+                                'label' => $this->module->l('Disabled')
+                            )
                         ),
                     ),
                 ),
-                'submit' => array('title' => $this->module->l('Save'))
+                'submit' => array(
+                    'title' => $this->module->l('Save'),
+                )
             ),
         );
 
         $helper = new HelperForm();
         $helper->table = 'mymodcomments';
         $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
-        $helper->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_LANG');
+        $helper->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
         $helper->submit_action = 'mymod_pc_form';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) .
                 '&configure=' . $this->module->name . '&tab_module=' . $this->module->tab . '&module_name=' . $this->module->name;
