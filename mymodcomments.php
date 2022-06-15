@@ -138,6 +138,8 @@ class MyModComments extends Module {
         }
     }
 
+    
+    
 
 
     public function renderForm() {
