@@ -30,6 +30,15 @@ class MyModComments extends Module {
         return $tab->add();
     }
 
+    public function uninstallTab($class_name) {
+        // Retrieve Tab ID
+        $id_tab = (int) Tab::getIdFromClassName($class_name);
+        // Load tab
+        $tab = new Tab((int) $id_tab);
+        // Delete it
+        return $tab->delete();
+    }
+
     public function install() {
         // Call install parent method
         if (!parent::install()) {
@@ -67,6 +76,10 @@ class MyModComments extends Module {
 //        if (!$this->loadSQLFile($sql_file)) {
 //            return false;
 //        }
+        // Uninstall admin tab
+        if (!$this->uninstallTab('AdminMyModComments'))
+            return false;
+
         // Delete configuration values
         Configuration::deleteByName('MYMOD_GRADES');
         Configuration::deleteByName('MYMOD_COMMENTS');
