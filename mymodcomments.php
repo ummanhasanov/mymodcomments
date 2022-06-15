@@ -138,9 +138,6 @@ class MyModComments extends Module {
         }
     }
 
-    
-    
-
 
     public function renderForm() {
         $fields_form = array(
