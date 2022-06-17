@@ -15,6 +15,7 @@ class MyModComment extends ObjectModel {
     /**
      * @see ObjectModel::$definition
      */
+    
     public static $definition = array('table' => 'mymod_comment', 'primary' =>
         'id_mymod_comment', 'multilang' => false, 'fields' => array(
             'id_product' => array('type' => self:: TYPE_INT, 'validate' =>
