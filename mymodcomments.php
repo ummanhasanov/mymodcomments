@@ -77,9 +77,9 @@ class MyModComments extends Module {
 //            return false;
 //        }
         // Uninstall admin tab
-        if (!$this->uninstallTab('AdminMyModComments'))
+        if (!$this->uninstallTab('AdminMyModComments')) {
             return false;
-
+        }
         // Delete configuration values
         Configuration::deleteByName('MYMOD_GRADES');
         Configuration::deleteByName('MYMOD_COMMENTS');

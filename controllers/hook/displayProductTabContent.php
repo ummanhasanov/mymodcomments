@@ -58,11 +58,6 @@ class MyModCommentsDisplayProductTabContentController {
         $this->context->smarty->assign('product', $product);
     }
 
-//    public function hookDisplayProductTabContent($params) {
-//        $this->processProductTabContent();
-//        $this->assignProductTabContent();
-//        return $this->module->display($this->file, 'displayProductTabContent.tpl');
-//    }
 
     public function run($params) {
         $this->processProductTabContent();
