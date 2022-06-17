@@ -48,7 +48,7 @@ class AdminMyModCommentsController extends ModuleAdminController {
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Would you like to delete the selected
             items?'),),
-// You can add you own action on bulk
+            // You can add you own action on bulk
             'myaction' => array(
                 'text' => $this->l('My Action'),
                 'confirm' => $this->l('Are you sure?'),
@@ -57,6 +57,11 @@ class AdminMyModCommentsController extends ModuleAdminController {
 
         // Define meta and toolbar title
         $this->meta_title = $this->l('Comments on product');
+        if (Tools::getIsset('viewmymod_comment')) {
+            $this->meta_title = $this->l('View Comment') . '#' .
+                    Tools::getValue('id_mymod_comment');
+        }
+
         $this->toolbar_title[] = $this->meta_title;
     }
 
@@ -65,8 +70,19 @@ class AdminMyModCommentsController extends ModuleAdminController {
     }
 
     public function renderView() {
-        $this->object->loadProductName();
+        // Build delete link
+        $admin_delete_link = $this->context->link->getAdminLink(
+                        'AdminMyMOdComments') . '&deletemymod_comment&id_mymod_comment=' . (int) $this->object->id;
 
+        // Add delete shortcut button to toolbar
+        $this->page_header_toolbar_btn['delete'] = array(
+            'href' => $admin_delete_link,
+            'desc' => $this->l('Delete it'),
+            'icon' => 'process-icon-delete',
+            'js' => "return confirm('" . $this->l('Are you sure you want to delete it ?') . "');",
+        );
+
+        $this->object->loadProductName();
         $tpl = $this->context->smarty->createTemplate(
                 dirname(__FILE__) .
                 '/../../views/templates/admin/view.tpl');
