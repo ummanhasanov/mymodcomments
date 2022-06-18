@@ -24,6 +24,36 @@ class AdminMyModCommentsController extends ModuleAdminController {
                 'date'),
         );
 
+        // Set fields form for form view
+        $this->context = Context::getContext();
+        $this->context->controller = $this;
+        $this->fields_form = array(
+            'legend' => array(
+                'title' => $this->l('Add / Edit Comment'),
+                'image' => '../img/admin/contact.gif'
+            ),
+            'input' => array(
+                array('type' => 'text', 'label' => $this->l('Firstname'),
+                    'name' => 'firstname', 'size' => 30, 'required' => true),
+                array('type' => 'text', 'label' => $this->l('Lastname'),
+                    'name' => 'lastname', 'size' => 30, 'required' => true),
+                array('type' => 'text', 'label' => $this->l('E-mail'),
+                    'name' => 'email', 'size' => 30, 'required' => true),
+                array('type' => 'select', 'label' => $this->l('Product'),
+                    'name' => 'id_product', 'required' => true,
+                    'default_value' => 1, 'options' =>
+                    array('query' => Product::getProducts($this->context->
+                                cookie->id_lang, 1, 1000, 'name', 'ASC'),
+                        'id' => 'id_product', 'name' => 'name')),
+                array('type' => 'text', 'label' => $this->l('Grade'), 'name' =>
+                    'grade', 'size' => 30, 'required' => true, 'desc' =>
+                    $this->l('Grade must be between 1 and 5')),
+                array('type' => 'textarea', 'label' => $this->l('Comment'),
+                    'name' => 'comment', 'cols' => 50, 'rows' => 5,
+                    'required' => false),),
+            'submit' => array('title' => $this->l('Save'))
+        );
+
         // Enable bootstrap
         $this->bootstrap = true;
 
@@ -48,7 +78,7 @@ class AdminMyModCommentsController extends ModuleAdminController {
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Would you like to delete the selected
             items?'),),
-            // You can add you own action on bulk
+            // You can add your own action on bulk
             'myaction' => array(
                 'text' => $this->l('My Action'),
                 'confirm' => $this->l('Are you sure?'),
@@ -71,10 +101,9 @@ class AdminMyModCommentsController extends ModuleAdminController {
 
     public function renderView() {
         // Build delete link
-        $admin_delete_link = $this->context->link->getAdminLink(
-                        'AdminMyMOdComments') . '&deletemymod_comment&id_mymod_comment=' . (int) $this->object->id;
+        $admin_delete_link = $this->context->link->getAdminLink('AdminMyMOdComments') . '&deletemymod_comment&id_mymod_comment=' . (int) $this->object->id;
 
-        // Add delete shortcut button to toolbar
+          // Add delete shortcut button to toolbar
         $this->page_header_toolbar_btn['delete'] = array(
             'href' => $admin_delete_link,
             'desc' => $this->l('Delete it'),
@@ -83,10 +112,10 @@ class AdminMyModCommentsController extends ModuleAdminController {
         );
 
         $this->object->loadProductName();
-        $tpl = $this->context->smarty->createTemplate(
+        $tpl = $this->context->smarty->createTemplate( 
                 dirname(__FILE__) .
                 '/../../views/templates/admin/view.tpl');
-        $tpl->assign('mymodcomment', $this->object);
+        $tpl->assign('mymodcomment', $this->object); 
 
         return $tpl->fetch();
     }

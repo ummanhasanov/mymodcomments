@@ -54,7 +54,10 @@ class MyModComments extends Module {
             return false;
         }
         // Register hooks
-        if (!$this->registerHook('displayProductTabContent') || !$this->registerHook('displayBackOfficeHeader') || $this->registerHook('ModuleRoutes')) {
+        if (!$this->registerHook('displayProductTabContent') ||
+                !$this->registerHook('displayBackOfficeHeader') ||
+                !$this->registerHook('displayAdminProductsExtra') ||
+                $this->registerHook('ModuleRoutes')) {
             return false;
         }
 
@@ -143,12 +146,26 @@ class MyModComments extends Module {
         return $controller->run($params);
     }
 
+    public function hookDisplayAdminProductsExtra($params) {
+        $controller = $this->getHookController('displayAdminProductsExtra');
+        return $controller->run();
+    }
+
     public function hookModulesRoutes() {
         $controller = $this->getHookController('modulesRoutes');
         return $controller->run();
     }
 
     public function getContent() {
+
+        $ajax_hook = Tools::getValue('ajax_hook');
+        if ($ajax_hook != '') {
+            $ajax_method = 'hook' . ucfirst($ajax_hook);
+            if (method_exists($this, $ajax_method)) {
+                die($this->{$ajax_method}(array()));
+            }
+        }
+
         $controller = $this->getHookController('getContent');
         return $controller->run();
     }
