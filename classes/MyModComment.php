@@ -11,13 +11,9 @@ class MyModComment extends ObjectModel {
     public $grade;
     public $comment;
     public $date_add;
-
-    /**
-     * @see ObjectModel::$definition
-     */
-    
-    public static $definition = array('table' => 'mymod_comment', 'primary' =>
-        'id_mymod_comment', 'multilang' => false, 'fields' => array(
+    public static $definition = array(
+        'table' => 'mymod_comment', 'primary' => 'id_mymod_comment', 'multilang' => false,
+        'fields' => array(
             'id_product' => array('type' => self:: TYPE_INT, 'validate' =>
                 'isUnsignedId', 'required' => true),
             'firstname' => array('type' => self:: TYPE_STRING, 'validate' =>
@@ -35,11 +31,11 @@ class MyModComment extends ObjectModel {
 
     public function loadProductName() {
         $product = new Product($this->id_product, true, Context::getContext()->
-                cookie - id_lang);
+                cookie->id_lang);
         $this->product_name = $product->name;
     }
 
-//   getProductNbComments:
+    //   getProductNbComments:
     public static function getProductNbComments($id_product) {
         $nb_comments = Db::getInstance()->getValue('
         SELECT COUNT(`id_product`)
@@ -49,10 +45,9 @@ class MyModComment extends ObjectModel {
         return $nb_comments;
     }
 
-//    getProductComments
+    //    getProductComments
     public static function getProductComments($id_product, $limit_start,
             $limit_end = false) {
-//        $limit = (int) $limit_start;
         $limit = (int) $limit_start;
         if ($limit_end) {
             $limit = (int) $limit_start . ',' . (int) $limit_end;
@@ -66,7 +61,32 @@ class MyModComment extends ObjectModel {
         return $comments;
     }
 
-//    getInfosOnProductsList
+    //   getCustomerNbComments:
+    public static function getCustomerNbComments($email) {
+        $nb_comments = Db::getInstance()->getValue('
+        SELECT COUNT(`id_product`)
+        FROM `' . _DB_PREFIX_ . 'mymod_comment`
+        WHERE `email` = \'' . pSQL($email) . '\'');
+
+        return $nb_comments;
+    }
+
+    //    getCustomerComments
+    public static function getCustomerComments($email, $limit_start,
+            $limit_end = false) {
+        $limit = (int) $limit_start;
+        if ($limit_end) {
+            $limit = (int) $limit_start . ',' . (int) $limit_end;
+        }
+        $comments = Db::getInstance()->executeS('
+        SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment` 
+        WHERE `email` = \'' . pSQL($email) . '\'
+        ORDER BY pc.`date_add` DESC
+        LIMIT ' . $limit);
+        return $comments;
+    }
+
+    //    getInfosOnProductsList
     public static function getInfosOnProductsList($id_product_list) {
         $grades_comments = Db::getInstance()->executeS('
         SELECT `id_product`, AVG(`grade`) as grade_avg,

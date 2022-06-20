@@ -57,7 +57,8 @@ class MyModComments extends Module {
         if (!$this->registerHook('displayProductTabContent') ||
                 !$this->registerHook('displayBackOfficeHeader') ||
                 !$this->registerHook('displayAdminProductsExtra') ||
-                $this->registerHook('ModuleRoutes')) {
+                !$this->registerHook('displayAdminCustomers') ||
+                !$this->registerHook('ModuleRoutes')) {
             return false;
         }
 
@@ -148,6 +149,11 @@ class MyModComments extends Module {
 
     public function hookDisplayAdminProductsExtra($params) {
         $controller = $this->getHookController('displayAdminProductsExtra');
+        return $controller->run();
+    }
+
+    public function hookDisplayAdminCustomer($params) {
+        $controller = $this->getHookController('displayAdminCustomer');
         return $controller->run();
     }
 

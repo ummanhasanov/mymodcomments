@@ -103,7 +103,21 @@ class AdminMyModCommentsController extends ModuleAdminController {
         // Build delete link
         $admin_delete_link = $this->context->link->getAdminLink('AdminMyMOdComments') . '&deletemymod_comment&id_mymod_comment=' . (int) $this->object->id;
 
-          // Add delete shortcut button to toolbar
+        // Build admin product link
+        $admin_product_link = $this->context->link->getAdminLink('AdminProducts') .
+                '&updateproduct&id_product=' . (int) $this->object->id_product .
+                '&key_tab=ModuleMymodComments';
+
+        // If author is known as a customer, build customer link
+        $admin_customer_link = '';
+        $customers = Customer::getCustomersByEmail($this->object->email);
+        if (isset($customers[0]['id_customer'])) {
+            $admin_customer_link = $this->context->link->getAdminLink('AdminCustomers') .
+                    '&viewcustomer&id_customer=' . (int) $customers[0]['id_customer'];
+        }
+
+
+        // Add delete shortcut button to toolbar
         $this->page_header_toolbar_btn['delete'] = array(
             'href' => $admin_delete_link,
             'desc' => $this->l('Delete it'),
@@ -112,10 +126,12 @@ class AdminMyModCommentsController extends ModuleAdminController {
         );
 
         $this->object->loadProductName();
-        $tpl = $this->context->smarty->createTemplate( 
+        $tpl = $this->context->smarty->createTemplate(
                 dirname(__FILE__) .
                 '/../../views/templates/admin/view.tpl');
-        $tpl->assign('mymodcomment', $this->object); 
+        $tpl->assign('mymodcomment', $this->object);
+        $tpl->assign('admin_product_link', $admin_product_link);
+        $tpl->assign('admin_customer_link', $admin_customer_link);
 
         return $tpl->fetch();
     }

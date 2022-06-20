@@ -70,9 +70,8 @@ class MyModCommentsGetContentController {
                     ),
                 ),
                 'submit' => array(
-                    'title' => $this->module->l('Save'),
+                    'title' => $this->module->l('Save'))
                 )
-            ),
         );
 
         $helper = new HelperForm();
