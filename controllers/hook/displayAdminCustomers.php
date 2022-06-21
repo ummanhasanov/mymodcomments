@@ -2,19 +2,14 @@
 
 class MyModCommentsDisplayAdminCustomersController {
 
-    private $file;
-    private $module;
-    private $context;
-    private $_path;
-
-    public function __construct($file, $module, $path) {
+    public function __construct($module, $file, $path) {
         $this->file = $file;
         $this->module = $module;
         $this->context = Context::getContext();
         $this->_path = $path;
     }
 
-    public function run() {
+     public function run() {
         // Get number of comments
         $id_customer = (int) Tools::getValue('id_customer');
         $customer = new Customer($id_customer);
@@ -24,7 +19,6 @@ class MyModCommentsDisplayAdminCustomersController {
         $page = 1;
         $nb_per_page = 10;
         $nb_pages = ceil($nb_comments / $nb_per_page);
-
         if (Tools::getIsset('page')) {
             $page = (int) Tools::getValue('page');
         }

@@ -149,12 +149,12 @@ class MyModComments extends Module {
 
     public function hookDisplayAdminProductsExtra($params) {
         $controller = $this->getHookController('displayAdminProductsExtra');
-        return $controller->run();
+        return $controller->run($params);
     }
 
-    public function hookDisplayAdminCustomer($params) {
-        $controller = $this->getHookController('displayAdminCustomer');
-        return $controller->run();
+    public function hookDisplayAdminCustomers($params) {
+        $controller = $this->getHookController('displayAdminCustomers');
+        return $controller->run($params);
     }
 
     public function hookModulesRoutes() {
