@@ -18,21 +18,13 @@
                         <td>#{$comment.id_mymod_comment}</td>
                         <td>{$comment.firstname} {$comment.lastname}</td>
                         <td>{$comment.email}</td>
-                        <td>{$comment.grade}/5</td>
+                        <td>{$comment.grade}/5</td> 
                         <td>{$comment.comment}</td>
                         <td>{$comment.date_add}</td>
                     </tr>
                 {/foreach}
             </tbody>
         </table>
-   {*     <div class="form-group clearfix">
-            <label class="col-lg-3">{l s='E-mail:' mod='mymodcomments'}</label>
-            <div class="col-lg-9">{if $admin_customer_link ne ''}<a href="{$admin_customer_link}">{/if}{$mymodcomment->email}{if $admin_customer_link ne ''}</a>{/if}</div>
-        </div>
-        <div class="form-group clearfix">
-            <label class="col-lg-3">{l s='Product:' mod='mymodcomments'}</label>
-            <div class="col-lg-9">{$mymodcomment->product_name} (<a href="{$admin_product_link}"> #{$mymodcomment->id_product}</a>)</div>
-        </div*}>
         {if $nb_pages gt 1}
             <ul class="pagination">
                 {for $count=1 to $nb_pages}

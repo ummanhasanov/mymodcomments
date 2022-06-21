@@ -78,16 +78,17 @@ class MyModComment extends ObjectModel {
         if ($limit_end) {
             $limit = (int) $limit_start . ',' . (int) $limit_end;
         }
+        
         $comments = Db::getInstance()->executeS('
 		SELECT pc.*, pl.`name` as product_name
-		FROM `'._DB_PREFIX_.'mymod_comment` pc
-		LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (
+		FROM `' . _DB_PREFIX_ . 'mymod_comment` pc
+		LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl ON (
 			pl.`id_product` = pc.`id_product` AND
-			pl.`id_lang` = '.(int)Context::getContext()->language->id.'
+			pl.`id_lang` = ' . (int) Context::getContext()->language->id . '
 		)
-		WHERE pc.`email` = \''.pSQL($email).'\'
+		WHERE pc.`email` = \'' . pSQL($email) . '\'
 		ORDER BY pc.`date_add` DESC
-		LIMIT '.$limit);
+		LIMIT ' . $limit);
         return $comments;
     }
 

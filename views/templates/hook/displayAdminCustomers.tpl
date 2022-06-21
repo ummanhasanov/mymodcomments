@@ -27,5 +27,21 @@
                 {/foreach}
             </tbody>
         </table>
-       </div>
+        {if $nb_pages gt 1}
+            <ul class="pagination">
+                {for $count=1 to $nb_pages}
+                    {if $page ne $count}
+                        <li>
+                            <a class="comments-pagination-link" href="{$ajax_action_url}&configure=mymodcomments&ajax_hook=displayAdminCustomers&id_customer={$smarty.get.id_customer}&page={$count}"><span>{$count}</span></a>
+                        </li>
+                    {else}
+                        <li class="active current">
+                            <span><span>{$count}</span></span>
+                        </li>
+                    {/if}
+                {/for}
+            </ul>
+            <script type="text/javascript" src="{$pc_base_dir}views/js/mymodcomments-customers.js"></script>
+        {/if}
+    </div>
 </div>
