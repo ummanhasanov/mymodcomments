@@ -143,8 +143,10 @@ class MyModComments extends Module {
     }
 
     public function hookDisplayBackOfficeHeader($params) {
-        $controller = $this->getHookController('displayBackOfficeHeader');
-        return $controller->run($params);
+        if (Tools::getValue('configure') == 'mymodcomments') {
+            $controller = $this->getHookController('displayBackOfficeHeader');
+            return $controller->run($params);
+        }
     }
 
     public function hookDisplayAdminProductsExtra($params) {
