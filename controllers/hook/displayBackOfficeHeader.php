@@ -11,9 +11,9 @@ class MyModCommentsDisplayBackOfficeHeaderController {
 
     public function run($params) {
         // If we are not on section modules, we do not add JS file
-        if (Tools::getValue('controller') != 'AdminModules')
+        if (Tools::getValue('controller') != 'AdminModules'){
             return '';
-
+        }
         // Assign module mymodcomments base dir
         $this->context->smarty->assign('pc_base_dir', __PS_BASE_URI__ . 'modules/' . $this->module->name . '/');
 

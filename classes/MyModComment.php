@@ -3,6 +3,7 @@
 class MyModComment extends ObjectModel {
 
     public $id_mymod_comment;
+    public $id_shop;
     public $id_product;
     public $product_name;
     public $firstname;
@@ -11,9 +12,13 @@ class MyModComment extends ObjectModel {
     public $grade;
     public $comment;
     public $date_add;
+    //ObjectModel::$definition
+
     public static $definition = array(
         'table' => 'mymod_comment', 'primary' => 'id_mymod_comment', 'multilang' => false,
         'fields' => array(
+            'id_shop' => array('type' => self::TYPE_INT, 'validate' =>
+                'isUnsignedId', 'required' => true),
             'id_product' => array('type' => self:: TYPE_INT, 'validate' =>
                 'isUnsignedId', 'required' => true),
             'firstname' => array('type' => self:: TYPE_STRING, 'validate' =>
@@ -40,7 +45,8 @@ class MyModComment extends ObjectModel {
         $nb_comments = Db::getInstance()->getValue('
         SELECT COUNT(`id_product`)
         FROM `' . _DB_PREFIX_ . 'mymod_comment`
-        WHERE `id_product` = ' . (int) $id_product);
+        WHERE `id_shop` = ' . (int) Context::getContext()->shop->id . '
+        AND `id_product` = ' . (int) $id_product);
 
         return $nb_comments;
     }
@@ -54,7 +60,8 @@ class MyModComment extends ObjectModel {
         }
         $comments = Db::getInstance()->executeS('
         SELECT * FROM `' . _DB_PREFIX_ . 'mymod_comment`
-        WHERE `id_product` = ' . (int) $id_product . '
+        WHERE `id_shop` = ' . (int) Context::getContext()->shop->id . '
+        AND `id_product` = ' . (int) $id_product . '
         ORDER BY `date_add` DESC
         LIMIT ' . $limit);
 
@@ -66,7 +73,8 @@ class MyModComment extends ObjectModel {
         $nb_comments = Db::getInstance()->getValue('
         SELECT COUNT(`id_product`)
         FROM `' . _DB_PREFIX_ . 'mymod_comment`
-        WHERE `email` = \'' . pSQL($email) . '\'');
+        WHERE `id_shop`= ' . (int) Context::getContext()->shop->id . '
+        AND `email` = \'' . pSQL($email) . '\'');
 
         return $nb_comments;
     }
@@ -78,7 +86,7 @@ class MyModComment extends ObjectModel {
         if ($limit_end) {
             $limit = (int) $limit_start . ',' . (int) $limit_end;
         }
-        
+
         $comments = Db::getInstance()->executeS('
 		SELECT pc.*, pl.`name` as product_name
 		FROM `' . _DB_PREFIX_ . 'mymod_comment` pc
@@ -86,7 +94,8 @@ class MyModComment extends ObjectModel {
 			pl.`id_product` = pc.`id_product` AND
 			pl.`id_lang` = ' . (int) Context::getContext()->language->id . '
 		)
-		WHERE pc.`email` = \'' . pSQL($email) . '\'
+		WHERE pc.`id_shop` = ' . (int) Context::getContext()->shop->id . '
+                AND pc.`email` = \'' . pSQL($email) . '\'
 		ORDER BY pc.`date_add` DESC
 		LIMIT ' . $limit);
         return $comments;
@@ -98,7 +107,8 @@ class MyModComment extends ObjectModel {
         SELECT `id_product`, AVG(`grade`) as grade_avg,
         COUNT(`id_mymod_comment`) as nb_comments
         FROM `' . _DB_PREFIX_ . 'mymod_comment`
-        WHERE `id_product` IN (' . implode(',', $id_product_list) . ')
+        WHERE `id_shop` = ' . (int) Context::getContext()->shop->id . '
+        AND `id_product` IN (' . implode(',', $id_product_list) . ')
         GROUP BY `id_product`');
         return $grades_comments;
     }

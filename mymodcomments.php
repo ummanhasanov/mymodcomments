@@ -7,36 +7,12 @@ class MyModComments extends Module {
     public function __construct() {
         $this->name = 'mymodcomments';
         $this->tab = 'front_office_features';
-        $this->version = '0.3';
+        $this->version = '0.4';
         $this->author = 'Umman Hasanov';
         $this->bootstrap = true;
         parent::__construct();
         $this->displayName = $this->l('My Module Of Product Comments');
         $this->description = $this->l('With this module your customers will be able to grade and comments your products');
-    }
-
-    public function installTab($parent, $class_name, $name) {
-
-        // Create new admin tab
-        $tab = new Tab();
-        $tab->id_parent = (int) Tab::getIdFromClassName($parent);
-        $tab->name = array();
-        foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = $name;
-        }
-        $tab->class_name = $class_name;
-        $tab->module = $this->name;
-        $tab->active = 1;
-        return $tab->add();
-    }
-
-    public function uninstallTab($class_name) {
-        // Retrieve Tab ID
-        $id_tab = (int) Tab::getIdFromClassName($class_name);
-        // Load tab
-        $tab = new Tab((int) $id_tab);
-        // Delete it
-        return $tab->delete();
     }
 
     public function install() {
@@ -50,7 +26,7 @@ class MyModComments extends Module {
             return false;
         }
         // Install admin tab
-        if (!$this->installTab('AdminCatalog', 'AdminMyModComments', 'MyModComments')) {
+        if (!$this->installTab('AdminCatalog', 'AdminMyModComments', 'MyMod Comments')) {
             return false;
         }
         // Register hooks
@@ -105,8 +81,35 @@ class MyModComments extends Module {
         foreach ($sql_requests as $request) {
             if (!empty($request)) {
                 $result &= Db::getInstance()->execute(trim($request));
-            } return $result;
+            }
         }
+        return $result;
+    }
+
+    public function installTab($parent, $class_name, $name) {
+
+        // Create new admin tab
+        $tab = new Tab();
+        $tab->id_parent = (int) Tab::getIdFromClassName($parent);
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $name;
+        }
+        $tab->class_name = $class_name;
+        $tab->module = $this->name;
+        $tab->active = 1;
+        return $tab->add();
+    }
+
+    public function uninstallTab($class_name) {
+        // Retrieve Tab ID
+        $id_tab = (int) Tab::getIdFromClassName($class_name);
+
+        // Load tab
+        $tab = new Tab((int) $id_tab);
+
+        // Delete it
+        return $tab->delete();
     }
 
     public function onClickOption($type, $href = false) {
@@ -176,6 +179,14 @@ class MyModComments extends Module {
 
         $controller = $this->getHookController('getContent');
         return $controller->run();
+    }
+
+    public function smartyGetCacheId($name = null) {
+        return $this->getCacheId($name);
+    }
+
+    public function smartyClearCache($template, $cache_id = null, $compile_id = null) {
+        return $this->_clearCache($template, $cache_id, $compile_id);
     }
 
 }

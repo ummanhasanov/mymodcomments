@@ -2,7 +2,7 @@
 <module>
 	<name>mymodcomments</name>
 	<displayName><![CDATA[My Module Of Product Comments]]></displayName>
-	<version><![CDATA[0.3]]></version>
+	<version><![CDATA[0.4]]></version>
 	<description><![CDATA[With this module your customers will be able to grade and comments your products]]></description>
 	<author><![CDATA[Umman Hasanov]]></author>
 	<tab><![CDATA[front_office_features]]></tab>

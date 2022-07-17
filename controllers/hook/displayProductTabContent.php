@@ -7,6 +7,7 @@ class MyModCommentsDisplayProductTabContentController {
         $this->module = $module;
         $this->context = Context::getContext();
         $this->_path = $path;
+        $this->cache_id = $this->module->smartyGetCacheId($this->module->name.(int)Tools::getValue('id_product'));
     }
 
     public function processProductTabContent() {
@@ -23,6 +24,7 @@ class MyModCommentsDisplayProductTabContentController {
                 return false;
             }
             $MyModComment = new MyModComment();
+            $MyModComment->id_shop = (int) $this->context->shop->id;
             $MyModComment->id_product = (int) $id_product;
             $MyModComment->firstname = $firstname;
             $MyModComment->lastname = $lastname;
@@ -31,26 +33,26 @@ class MyModCommentsDisplayProductTabContentController {
             $MyModComment->comment = nl2br($comment);
             $MyModComment->add();
 
-            $this->context->smarty->assign('new_comment_posted', 'true');
+            $this->context->smarty->assign('new_comment_posted', 'success');
+            
+            $this->module->smartyClearCache('displayProductTabContent.tpl', $this->cache_id);
         }
     }
 
     public function assignProductTabContent() {
-        
+
         $enable_grades = Configuration::get('MYMOD_GRADES');
         $enable_comments = Configuration::get('MYMOD_COMMENTS');
 
         $this->context->controller->addCSS($this->_path . 'views/css/star-rating.css', 'all');
         $this->context->controller->addJS($this->_path . 'views/js/star-rating.js');
-      
+
         $this->context->controller->addCSS($this->_path . 'views/css/mymodcomments.css', 'all');
         $this->context->controller->addJS($this->_path . 'views/js/mymodcomments.js');
-        $this->context->controller->addJQueryUI('ui.slider');
 
         $id_product = Tools::getValue('id_product');
         $comments = MyModComment::getProductComments($id_product, 0, 3);
         $product = new Product((int) $id_product, false, $this->context->cookie->id_lang);
-        
 
         $this->context->smarty->assign('enable_grades', $enable_grades);
         $this->context->smarty->assign('enable_comments', $enable_comments);
@@ -58,11 +60,10 @@ class MyModCommentsDisplayProductTabContentController {
         $this->context->smarty->assign('product', $product);
     }
 
-
     public function run($params) {
         $this->processProductTabContent();
         $this->assignProductTabContent();
-        return $this->module->display($this->file, 'displayProductTabContent.tpl');
+        return $this->module->display($this->file, 'displayProductTabContent.tpl', $this->cache_id);
     }
 
 }

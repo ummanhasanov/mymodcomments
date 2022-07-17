@@ -9,6 +9,8 @@ class AdminMyModCommentsController extends ModuleAdminController {
         $this->fields_list = array(
             'id_mymod_comment' => array('title' => $this->l('ID'), 'align' =>
                 'center', 'width' => 25),
+            'shop_name' => array('title' => $this->l('Shop'), 'width' => 120,
+                'filter_key' => 's!name'),
             'firstname' => array('title' => $this->l('Firstname'), 'width' =>
                 120),
             'lastname' => array('title' => $this->l('Lastname'), 'width' =>
@@ -61,11 +63,12 @@ class AdminMyModCommentsController extends ModuleAdminController {
         parent::__construct();
 
         // Update the SQL request of the HelperList
-        $this->_select = "pl.`name` as product_name, CONCAT(a.`grade`, '/5') as
+        $this->_select = "s.`name` as shop_name, pl.`name` as product_name, CONCAT(a.`grade`, '/5') as
                 grade_display";
         $this->_join = 'LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl 
                 ON (pl.`id_product` = a.`id_product` AND pl. `id_lang` = 
-                ' . (int) $this->context->language->id . ')';
+                ' . (int) $this->context->language->id . ' AND pl.`id_shop` = a.`id_shop`)
+                   LEFT JOIN `' . _DB_PREFIX_ . 'shop` s ON (s.`id_shop` = a.`id_shop`)';
 
         // Add actions
         $this->addRowAction('view');
