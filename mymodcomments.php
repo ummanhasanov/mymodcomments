@@ -20,11 +20,12 @@ class MyModComments extends Module {
         if (!parent::install()) {
             return false;
         }
-        // Execute module install SQL statements
+        // Execute module install SQL statements  
         $sql_file = dirname(__FILE__) . '/install/install.sql';
         if (!$this->loadSQLFile($sql_file)) {
             return false;
-        }
+        } 
+        
         // Install admin tab
         if (!$this->installTab('AdminCatalog', 'AdminMyModComments', 'MyMod Comments')) {
             return false;
